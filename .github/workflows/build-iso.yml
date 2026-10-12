@@ -78,6 +78,27 @@ jobs:
         run: |
           grep -n "SYSLINUX" config/common config/binary 2>/dev/null || true
 
+      - name: Seed local syslinux bootloaders
+        run: |
+          set -e
+          src=/usr/share/live/build/bootloaders/isolinux
+          echo "=== $src ==="
+          ls -la "$src" || true
+          dest=config/bootloaders/isolinux
+          mkdir -p "$dest"
+          # Copy the live-build isolinux templates as *real* files. The
+          # originals are absolute symlinks that dangle inside the Debian
+          # bookworm chroot.
+          for f in "$src"/*; do
+            [ -e "$f" ] || continue
+            cp -Lf "$f" "$dest/$(basename "$f")" 2>/dev/null || true
+          done
+          # Ensure the actual syslinux binaries/modules are present.
+          cp -f /usr/lib/ISOLINUX/isolinux.bin "$dest/" 2>/dev/null || true
+          cp -f /usr/lib/syslinux/modules/bios/*.c32 "$dest/" 2>/dev/null || true
+          echo "=== $dest ==="
+          ls -la "$dest"
+
       - name: Build ISO
         run: sudo ./auto/build
 
