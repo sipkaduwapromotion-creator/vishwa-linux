@@ -4,4 +4,5 @@
 #
 set -e
 
-lb build
+# "noauto" stops lb from re-invoking this script (would recurse forever).
+lb build noauto

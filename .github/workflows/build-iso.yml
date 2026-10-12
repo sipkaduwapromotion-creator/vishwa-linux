@@ -31,6 +31,9 @@ jobs:
           sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
             live-build debootstrap \
             xorriso squashfs-tools mtools dosfstools \
+            isolinux syslinux syslinux-common \
+            grub-common grub-pc-bin grub-efi-amd64-bin \
+            uuid-runtime rsync \
             librsvg2-bin fonts-dejavu-core
           lb --version || true
 
