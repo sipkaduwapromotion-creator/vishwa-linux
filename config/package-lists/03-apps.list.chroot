@@ -1,6 +1,6 @@
 # ---- desktop applications --------------------------------------------------
 gnome-terminal
-xed
+gedit
 eog
 file-roller
 evince
