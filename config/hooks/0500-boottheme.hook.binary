@@ -12,6 +12,8 @@ if [ -d binary ]; then
 fi
 
 echo "Vishwa: theming bootloaders..."
+echo "Vishwa: ISO tree directories:"
+find . -maxdepth 2 -type d 2>/dev/null | sort | sed 's/^/  /' || true
 
 # ---- syslinux / isolinux (BIOS boot) ----------------------------------------
 if [ -d isolinux ]; then
@@ -25,18 +27,30 @@ if [ -d isolinux ]; then
 		sed -i 's/^menu title .*/menu title Vishwa Linux 1.0 (Cosmos)/' isolinux/menu.cfg || true
 	fi
 	echo "Vishwa: syslinux themed."
+else
+	echo "Vishwa: no isolinux dir found."
 fi
 
 # ---- GRUB (UEFI boot) -------------------------------------------------------
-if [ -d boot/grub ]; then
+GRUB_DIR=""
+for d in boot/grub EFI/BOOT/grub EFI/boot/grub boot/grub2 EFI/debian/grub; do
+	if [ -d "$d" ]; then
+		GRUB_DIR="$d"
+		break
+	fi
+done
+
+if [ -n "$GRUB_DIR" ]; then
 	if [ -f vishwa-boot/grub-splash.png ]; then
-		cp -f vishwa-boot/grub-splash.png boot/grub/splash.png
+		cp -f vishwa-boot/grub-splash.png "$GRUB_DIR/splash.png"
 	fi
 	if [ -f vishwa-boot/grub-theme.txt ]; then
-		mkdir -p boot/grub/live-theme
-		cp -f vishwa-boot/grub-theme.txt boot/grub/live-theme/theme.txt
+		mkdir -p "$GRUB_DIR/live-theme"
+		cp -f vishwa-boot/grub-theme.txt "$GRUB_DIR/live-theme/theme.txt"
 	fi
-	echo "Vishwa: grub themed."
+	echo "Vishwa: grub themed ($GRUB_DIR)."
+else
+	echo "Vishwa: no grub dir found."
 fi
 
 # ---- staging cleanup --------------------------------------------------------
