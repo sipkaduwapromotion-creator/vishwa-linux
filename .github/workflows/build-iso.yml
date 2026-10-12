@@ -47,15 +47,26 @@ jobs:
       - name: Generate branding assets
         run: bash tools/build-assets.sh
 
-      - name: Debug live-build syslinux defaults
+      - name: Inspect live-build for Ubuntu-only packages
         run: |
           echo "=== live-build version ==="
           lb --version || true
-          echo "=== defaults.sh SYSLINUX ==="
-          grep -rn "SYSLINUX" /usr/share/live/build/functions/defaults.sh 2>/dev/null || true
-          echo "=== Ubuntu-only package references ==="
-          grep -rn "gfxboot-theme-ubuntu\|syslinux-themes\|ubuntu-oneiric" \
-            /usr/lib/live/build /usr/share/live/build 2>/dev/null || true
+          echo "=== all Check_package references ==="
+          grep -rn "Check_package" /usr/lib/live/build 2>/dev/null || true
+          echo "=== ubuntu references ==="
+          grep -rn "ubuntu" /usr/lib/live/build 2>/dev/null || true
+
+      - name: Patch Ubuntu-only live-build syslinux theme/splash
+        run: |
+          set -e
+          f=/usr/lib/live/build/lb_binary_syslinux
+          sudo sed -i \
+            -e '/Check_package chroot\/usr\/share\/syslinux\/themes/d' \
+            -e '/gfxboot-theme-ubuntu/d' \
+            "$f"
+          echo "===== patched lb_binary_syslinux ====="
+          cat -n "$f"
+          sudo bash -n "$f" || echo "!! SYNTAX ERROR after patch"
 
       - name: Configure live-build
         run: sudo ./auto/config
