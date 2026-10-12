@@ -79,6 +79,16 @@ jobs:
           echo "===== relevant lines after patch ====="
           grep -n "rsvg\|bootlogo\|gfxboot\|syslinux/themes\|isolinux-live" "$f" || true
 
+      - name: Force xz squashfs compression
+        run: |
+          set -e
+          r=/usr/lib/live/build/lb_binary_rootfs
+          # The Ubuntu live-build skips "-comp xz" when LB_MODE=ubuntu, which
+          # makes the squashfs image gzip-compressed and the ISO ~300 MB larger.
+          sudo sed -i '/-no-progress/a MKSQUASHFS_OPTIONS="${MKSQUASHFS_OPTIONS} -comp xz"' "$r"
+          sudo bash -n "$r" || echo "!! SYNTAX ERROR in lb_binary_rootfs"
+          grep -n -- "-comp xz" "$r" || true
+
       - name: Configure live-build
         run: sudo ./auto/config
 
