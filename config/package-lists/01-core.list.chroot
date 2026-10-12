@@ -1,0 +1,23 @@
+# ---- live system -----------------------------------------------------------
+live-boot
+live-tools
+live-config
+live-config-systemd
+
+# ---- base system -----------------------------------------------------------
+systemd
+systemd-sysv
+dbus
+sudo
+policykit-1
+locales
+console-setup
+keyboard-configuration
+kbd
+tzdata
+util-linux
+e2fsprogs
+dosfstools
+parted
+apt-utils
+ca-certificates

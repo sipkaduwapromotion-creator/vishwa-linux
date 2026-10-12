@@ -1,0 +1,23 @@
+# ---- Cinnamon desktop ------------------------------------------------------
+cinnamon-core
+cinnamon
+cinnamon-common
+nemo
+dconf-cli
+lightdm
+slick-greeter
+
+# ---- X / graphics ----------------------------------------------------------
+xserver-xorg
+xserver-xorg-video-all
+xserver-xorg-input-all
+xinit
+x11-utils
+x11-xserver-utils
+dbus-x11
+libgl1-mesa-dri
+mesa-utils
+
+# ---- boot splash -----------------------------------------------------------
+plymouth
+plymouth-themes

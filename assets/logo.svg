@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <radialGradient id="planet" cx="34%" cy="28%" r="85%">
+      <stop offset="0%" stop-color="#a184ff"/>
+      <stop offset="42%" stop-color="#6a4be0"/>
+      <stop offset="100%" stop-color="#241148"/>
+    </radialGradient>
+    <linearGradient id="ring" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#46e2ff"/>
+      <stop offset="52%" stop-color="#a06bff"/>
+      <stop offset="100%" stop-color="#ff6bd6"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#7a5cff" stop-opacity="0.55"/>
+      <stop offset="70%" stop-color="#5b3fd6" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#5b3fd6" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- halo -->
+  <circle cx="256" cy="256" r="238" fill="url(#glow)"/>
+
+  <!-- planet -->
+  <circle cx="256" cy="256" r="150" fill="url(#planet)"/>
+  <ellipse cx="206" cy="204" rx="66" ry="48" fill="#ffffff" opacity="0.12"/>
+
+  <!-- orbit ring -->
+  <g transform="rotate(-24 256 256)">
+    <ellipse cx="256" cy="256" rx="236" ry="74" fill="none"
+             stroke="url(#ring)" stroke-width="16" stroke-linecap="round"/>
+  </g>
+
+  <!-- moon -->
+  <circle cx="392" cy="140" r="20" fill="#ffe08a"/>
+  <circle cx="392" cy="140" r="20" fill="none" stroke="#fff6d8" stroke-width="3" opacity="0.7"/>
+</svg>

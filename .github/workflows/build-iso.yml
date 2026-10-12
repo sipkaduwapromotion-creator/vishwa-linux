@@ -1,0 +1,76 @@
+name: Build Vishwa Linux ISO
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main, master ]
+    tags: [ 'v*' ]
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Free disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc \
+                      /opt/hostedtoolcache/CodeQL /usr/local/share/boost || true
+          sudo apt-get clean
+          df -h /
+
+      - name: Install host dependencies
+        run: |
+          sudo apt-get update
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+            live-build debootstrap \
+            xorriso squashfs-tools mtools dosfstools \
+            librsvg2-bin fonts-dejavu-core
+          lb --version || true
+
+      - name: Normalise scripts
+        run: |
+          sudo find . -type f \( -name '*.sh' -o -path './auto/*' -o -path './config/hooks/*' \) \
+            -exec sed -i 's/\r$//' {} +
+          chmod +x auto/config auto/build auto/clean \
+                   config/hooks/live/* tools/*.sh
+
+      - name: Generate branding assets
+        run: bash tools/build-assets.sh
+
+      - name: Configure live-build
+        run: sudo ./auto/config
+
+      - name: Build ISO
+        run: sudo ./auto/build
+
+      - name: Collect ISO
+        run: |
+          set -e
+          ISO="$(find . -maxdepth 1 -name '*.iso' | head -n1)"
+          echo "Built ISO: $ISO"
+          cp "$ISO" "Vishwa-Linux-1.0-amd64.iso"
+          ls -lh Vishwa-Linux-1.0-amd64.iso
+          du -h Vishwa-Linux-1.0-amd64.iso
+
+      - name: Upload ISO artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: vishwa-linux-iso
+          path: Vishwa-Linux-1.0-amd64.iso
+          if-no-files-found: error
+          compression-level: 0
+          retention-days: 30
+
+      - name: Publish release (tags only)
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: Vishwa-Linux-1.0-amd64.iso
+          generate_release_notes: true

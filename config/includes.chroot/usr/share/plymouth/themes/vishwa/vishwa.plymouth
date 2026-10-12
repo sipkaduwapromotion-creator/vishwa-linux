@@ -1,0 +1,8 @@
+[Plymouth Theme]
+Name=Vishwa Linux
+Description=Cosmic boot theme for Vishwa Linux
+ModuleName=script
+
+[script]
+ImageDir=/usr/share/plymouth/themes/vishwa
+ScriptFile=/usr/share/plymouth/themes/vishwa/vishwa.script

@@ -1,0 +1,6 @@
+# Always use LF for text files so the shell scripts survive Windows checkouts.
+* text=auto eol=lf
+
+*.png binary
+*.svg text eol=lf
+*.iso binary

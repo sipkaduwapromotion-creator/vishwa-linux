@@ -1,0 +1,12 @@
+PRETTY_NAME="Vishwa Linux 1.0 (Cosmos)"
+NAME="Vishwa Linux"
+VERSION_ID="1.0"
+VERSION="1.0 (Cosmos)"
+VERSION_CODENAME=cosmos
+ID=vishwa
+ID_LIKE=debian
+ANSI_COLOR="1;35"
+HOME_URL="https://github.com/vishwa-linux"
+SUPPORT_URL="https://github.com/vishwa-linux/issues"
+BUG_REPORT_URL="https://github.com/vishwa-linux/issues"
+LOGO=vishwa-logo

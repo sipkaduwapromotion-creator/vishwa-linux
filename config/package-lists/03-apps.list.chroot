@@ -1,0 +1,54 @@
+# ---- desktop applications --------------------------------------------------
+gnome-terminal
+xed
+eog
+file-roller
+evince
+firefox-esr
+xdg-user-dirs
+xdg-user-dirs-gtk
+xdg-utils
+
+# ---- networking ------------------------------------------------------------
+network-manager
+network-manager-gnome
+wpasupplicant
+iw
+wireless-regdb
+
+# ---- audio -----------------------------------------------------------------
+pulseaudio
+pulseaudio-utils
+alsa-utils
+pavucontrol
+
+# ---- removable media -------------------------------------------------------
+udisks2
+gvfs
+gvfs-backends
+gvfs-fuse
+ntfs-3g
+usbutils
+pciutils
+
+# ---- fonts -----------------------------------------------------------------
+fonts-dejavu-core
+fonts-liberation2
+fonts-noto-core
+
+# ---- small utilities -------------------------------------------------------
+nano
+vim-tiny
+less
+htop
+psmisc
+procps
+wget
+curl
+rsync
+unzip
+zip
+p7zip-full
+tar
+gzip
+xz-utils

@@ -1,0 +1,7 @@
+#!/bin/sh
+#
+# Vishwa Linux - build the ISO.
+#
+set -e
+
+lb build

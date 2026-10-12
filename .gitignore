@@ -1,0 +1,26 @@
+# live-build working directories
+/chroot/
+/binary/
+/cache/
+/.build/
+/*.iso
+/*.img
+/*.list
+/*.contents
+/*.files
+/*.packages
+/*.build
+/*.log
+/*.md5sum
+/*.sha1sum
+/*.sha256sum
+/*.sha512sum
+/auto/config.bak
+
+# generated branding assets
+/config/includes.chroot/usr/share/backgrounds/vishwa/*.png
+/config/includes.chroot/usr/share/pixmaps/*.png
+/config/includes.chroot/usr/share/plymouth/themes/vishwa/logo.png
+/config/includes.chroot/usr/share/icons/hicolor/scalable/apps/*
+/config/includes.chroot/etc/skel/.face
+/config/includes.binary/vishwa-boot/*.png

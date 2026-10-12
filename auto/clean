@@ -1,0 +1,7 @@
+#!/bin/sh
+#
+# Vishwa Linux - clean the build tree.
+#
+set -e
+
+lb clean --purge

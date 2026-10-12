@@ -1,0 +1,32 @@
+#!/bin/sh
+#
+# Vishwa Linux - chroot branding hook.
+# Runs inside the freshly built chroot, after packages are installed.
+#
+set -e
+
+echo "Vishwa: applying branding..."
+
+# ---- live user avatar -------------------------------------------------------
+if [ -f /usr/share/pixmaps/vishwa-logo.png ]; then
+	install -Dm644 /usr/share/pixmaps/vishwa-logo.png /etc/skel/.face
+	install -Dm644 /usr/share/pixmaps/vishwa-logo.png /usr/share/pixmaps/faces/vishwa.png 2>/dev/null || true
+fi
+
+# ---- dconf system defaults (wallpaper, theme, greeter) ----------------------
+if [ -d /etc/dconf/db ]; then
+	dconf update || true
+fi
+
+# ---- Plymouth default theme -------------------------------------------------
+if command -v plymouth-set-default-theme >/dev/null 2>&1; then
+	plymouth-set-default-theme vishwa || true
+fi
+
+# ---- Rebuild initramfs so the boot splash is embedded -----------------------
+if command -v update-initramfs >/dev/null 2>&1; then
+	update-initramfs -u -k all || true
+fi
+
+echo "Vishwa: branding done."
+exit 0

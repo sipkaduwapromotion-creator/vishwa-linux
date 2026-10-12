@@ -1,0 +1,14 @@
+[org/cinnamon/desktop/background]
+picture-uri='file:///usr/share/backgrounds/vishwa/vishwa-wallpaper.png'
+picture-options='zoom'
+primary-color='#0b0720'
+secondary-color='#241257'
+color-shading-type='solid'
+
+[org/cinnamon/desktop/interface]
+gtk-theme='Adwaita-dark'
+icon-theme='Adwaita'
+cursor-theme='Adwaita'
+
+[org/cinnamon/desktop/screensaver]
+picture-uri='file:///usr/share/backgrounds/vishwa/vishwa-wallpaper.png'

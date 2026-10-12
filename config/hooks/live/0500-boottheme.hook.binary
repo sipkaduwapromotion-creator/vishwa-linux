@@ -1,0 +1,41 @@
+#!/bin/sh
+#
+# Vishwa Linux - bootloader theming hook (binary stage).
+#
+# NOTE: live-build runs binary hooks with the current working directory set to
+# the ISO root ("binary/"). Everything below is relative to that.
+#
+set -e
+
+echo "Vishwa: theming bootloaders..."
+
+# ---- syslinux / isolinux (BIOS boot) ----------------------------------------
+if [ -d isolinux ]; then
+	if [ -f vishwa-boot/syslinux-splash.png ]; then
+		cp -f vishwa-boot/syslinux-splash.png isolinux/splash.png
+	fi
+	if [ -f vishwa-boot/stdmenu.cfg ]; then
+		cp -f vishwa-boot/stdmenu.cfg isolinux/stdmenu.cfg
+	fi
+	if [ -f isolinux/menu.cfg ]; then
+		sed -i 's/^menu title .*/menu title Vishwa Linux 1.0 (Cosmos)/' isolinux/menu.cfg || true
+	fi
+	echo "Vishwa: syslinux themed."
+fi
+
+# ---- GRUB (UEFI boot) -------------------------------------------------------
+if [ -d boot/grub ]; then
+	if [ -f vishwa-boot/grub-splash.png ]; then
+		cp -f vishwa-boot/grub-splash.png boot/grub/splash.png
+	fi
+	if [ -f vishwa-boot/grub-theme.txt ]; then
+		mkdir -p boot/grub/live-theme
+		cp -f vishwa-boot/grub-theme.txt boot/grub/live-theme/theme.txt
+	fi
+	echo "Vishwa: grub themed."
+fi
+
+# ---- staging cleanup --------------------------------------------------------
+rm -rf vishwa-boot
+
+exit 0
