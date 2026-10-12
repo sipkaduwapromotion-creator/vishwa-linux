@@ -47,8 +47,22 @@ jobs:
       - name: Generate branding assets
         run: bash tools/build-assets.sh
 
+      - name: Debug live-build syslinux defaults
+        run: |
+          echo "=== live-build version ==="
+          lb --version || true
+          echo "=== defaults.sh SYSLINUX ==="
+          grep -rn "SYSLINUX" /usr/share/live/build/functions/defaults.sh 2>/dev/null || true
+          echo "=== Ubuntu-only package references ==="
+          grep -rn "gfxboot-theme-ubuntu\|syslinux-themes\|ubuntu-oneiric" \
+            /usr/lib/live/build /usr/share/live/build 2>/dev/null || true
+
       - name: Configure live-build
         run: sudo ./auto/config
+
+      - name: Show resolved syslinux config
+        run: |
+          grep -n "SYSLINUX" config/common config/binary 2>/dev/null || true
 
       - name: Build ISO
         run: sudo ./auto/build

@@ -41,3 +41,13 @@ lb config noauto \
 	--iso-volume "VISHWA_LINUX" \
 	--zsync false \
 	"${@}"
+
+# The live-build shipped on the CI runner (Ubuntu) defaults the syslinux theme
+# and splash to Ubuntu-only packages (syslinux-themes-ubuntu-oneiric,
+# gfxboot-theme-ubuntu) that do not exist in Debian bookworm. We theme the boot
+# loaders ourselves via config/hooks, so force these off.
+for _cfg in config/common config/binary; do
+	if [ -f "${_cfg}" ]; then
+		printf '\nLB_SYSLINUX_THEME="none"\nLB_SYSLINUX_SPLASH="none"\n' >> "${_cfg}"
+	fi
+done
