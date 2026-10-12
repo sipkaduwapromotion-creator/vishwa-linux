@@ -30,7 +30,6 @@ lb config noauto \
 	--linux-packages "linux-image" \
 	--initramfs "live-boot" \
 	--initsystem "systemd" \
-	--debian-installer "none" \
 	--memtest "none" \
 	--keyring-packages "debian-archive-keyring" \
 	--apt-recommends false \
