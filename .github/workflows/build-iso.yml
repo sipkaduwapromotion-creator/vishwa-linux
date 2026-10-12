@@ -31,7 +31,7 @@ jobs:
           sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
             live-build debootstrap \
             xorriso squashfs-tools mtools dosfstools \
-            isolinux syslinux syslinux-common \
+            isolinux syslinux syslinux-common syslinux-utils \
             grub-common grub-pc-bin grub-efi-amd64-bin \
             uuid-runtime rsync \
             librsvg2-bin fonts-dejavu-core
@@ -55,6 +55,10 @@ jobs:
           grep -rn "Check_package" /usr/lib/live/build 2>/dev/null || true
           echo "=== ubuntu references ==="
           grep -rn "ubuntu" /usr/lib/live/build 2>/dev/null || true
+          echo "=== lb_binary_hooks ==="
+          cat -n /usr/lib/live/build/lb_binary_hooks 2>/dev/null || true
+          echo "=== lb_chroot_hooks ==="
+          cat -n /usr/lib/live/build/lb_chroot_hooks 2>/dev/null || true
 
       - name: Patch Ubuntu-only live-build syslinux behaviour
         run: |
