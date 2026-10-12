@@ -21,3 +21,4 @@ dosfstools
 parted
 apt-utils
 ca-certificates
+syslinux-utils

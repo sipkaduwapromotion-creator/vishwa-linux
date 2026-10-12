@@ -2,10 +2,14 @@
 #
 # Vishwa Linux - bootloader theming hook (binary stage).
 #
-# NOTE: live-build runs binary hooks with the current working directory set to
-# the ISO root ("binary/"). Everything below is relative to that.
-#
+# NOTE: live-build runs local binary hooks from the build root, with the ISO
+# tree in "binary/". Normalise that so everything below is relative to the ISO
+# root.
 set -e
+
+if [ -d binary ]; then
+	cd binary
+fi
 
 echo "Vishwa: theming bootloaders..."
 

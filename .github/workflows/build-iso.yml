@@ -42,7 +42,7 @@ jobs:
           sudo find . -type f \( -name '*.sh' -o -path './auto/*' -o -path './config/hooks/*' \) \
             -exec sed -i 's/\r$//' {} +
           chmod +x auto/config auto/build auto/clean \
-                   config/hooks/live/* tools/*.sh
+                   config/hooks/* tools/*.sh
 
       - name: Generate branding assets
         run: bash tools/build-assets.sh
@@ -59,6 +59,10 @@ jobs:
           cat -n /usr/lib/live/build/lb_binary_hooks 2>/dev/null || true
           echo "=== lb_chroot_hooks ==="
           cat -n /usr/lib/live/build/lb_chroot_hooks 2>/dev/null || true
+          echo "=== lb_binary_rootfs compression ==="
+          grep -n "mksquashfs\|gzip\|COMPRESS\|compression\|comp " /usr/lib/live/build/lb_binary_rootfs 2>/dev/null || true
+          echo "=== lb_config compression option ==="
+          grep -n "compression\|--comp" /usr/lib/live/build/lb_config 2>/dev/null || true
 
       - name: Patch Ubuntu-only live-build syslinux behaviour
         run: |
