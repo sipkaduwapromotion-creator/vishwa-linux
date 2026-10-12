@@ -56,17 +56,20 @@ jobs:
           echo "=== ubuntu references ==="
           grep -rn "ubuntu" /usr/lib/live/build 2>/dev/null || true
 
-      - name: Patch Ubuntu-only live-build syslinux theme/splash
+      - name: Patch Ubuntu-only live-build syslinux behaviour
         run: |
           set -e
           f=/usr/lib/live/build/lb_binary_syslinux
           sudo sed -i \
             -e '/Check_package chroot\/usr\/share\/syslinux\/themes/d' \
             -e '/gfxboot-theme-ubuntu/d' \
+            -e '/\${_TARGET}\/bootlogo/d' \
+            -e 's|rsvg --format png --height 480 --width 640 splash\.svg splash\.png|rsvg-convert -w 640 -h 480 -o splash.png splash.svg|' \
+            -e 's|rsvg --format png --height 480 --width 640 "\${_TARGET}/splash\.svg" "\${_TARGET}/splash\.png"|rsvg-convert -w 640 -h 480 -o "\${_TARGET}/splash.png" "\${_TARGET}/splash.svg"|' \
             "$f"
-          echo "===== patched lb_binary_syslinux ====="
-          cat -n "$f"
           sudo bash -n "$f" || echo "!! SYNTAX ERROR after patch"
+          echo "===== relevant lines after patch ====="
+          grep -n "rsvg\|bootlogo\|gfxboot\|syslinux/themes\|isolinux-live" "$f" || true
 
       - name: Configure live-build
         run: sudo ./auto/config
