@@ -32,6 +32,7 @@ lb config noauto \
 	--initsystem "systemd" \
 	--debian-installer "none" \
 	--memtest "none" \
+	--keyring-packages "debian-archive-keyring" \
 	--apt-recommends false \
 	--firmware-binary false \
 	--firmware-chroot false \
