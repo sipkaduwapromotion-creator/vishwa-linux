@@ -50,14 +50,15 @@ if [ -n "$GRUB_DIR" ]; then
 		mkdir -p "$GRUB_DIR/live-theme"
 		cp -f vishwa-boot/grub-theme.txt "$GRUB_DIR/live-theme/theme.txt"
 	fi
-	# Point GRUB at the theme in every generated config (BIOS + UEFI share
-	# boot/grub/grub.cfg on the live ISO).
-	find "$GRUB_DIR" -maxdepth 2 -name 'grub.cfg' 2>/dev/null | while read -r _cfg; do
-		if ! grep -q 'live-theme/theme.txt' "$_cfg" 2>/dev/null; then
-			printf '\nset theme=/boot/grub/live-theme/theme.txt\n' >> "$_cfg"
+	# Point GRUB at the theme. The UEFI bootloader (embedded EFI config) does
+	# `configfile ($root)/boot/grub/grub.cfg`, so the single canonical
+	# boot/grub/grub.cfg is what both BIOS grub-pc and UEFI grub-efi load.
+	if [ -f "$GRUB_DIR/grub.cfg" ]; then
+		if ! grep -q 'live-theme/theme.txt' "$GRUB_DIR/grub.cfg" 2>/dev/null; then
+			printf '\nset theme=/boot/grub/live-theme/theme.txt\n' >> "$GRUB_DIR/grub.cfg"
 		fi
-	done
-	grep -rl 'live-theme/theme.txt' "$GRUB_DIR" 2>/dev/null | sed 's/^/  Vishwa: grub theme set in /' || true
+		grep -l 'live-theme/theme.txt' "$GRUB_DIR/grub.cfg" 2>/dev/null | sed 's/^/  Vishwa: grub theme set in /' || true
+	fi
 	echo "Vishwa: grub themed ($GRUB_DIR)."
 else
 	echo "Vishwa: no grub dir found."
