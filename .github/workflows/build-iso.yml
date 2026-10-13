@@ -42,80 +42,26 @@ jobs:
           sudo find . -type f \( -name '*.sh' -o -path './auto/*' -o -path './config/hooks/*' \) \
             -exec sed -i 's/\r$//' {} +
           chmod +x auto/config auto/build auto/clean \
-                   config/hooks/* tools/*.sh
+                   config/hooks/* config/hooks/normal/* tools/*.sh
 
       - name: Generate branding assets
         run: bash tools/build-assets.sh
 
-      - name: Inspect live-build for Ubuntu-only packages
-        run: |
-          echo "=== live-build version ==="
-          lb --version || true
-          echo "=== all Check_package references ==="
-          grep -rn "Check_package" /usr/lib/live/build 2>/dev/null || true
-          echo "=== ubuntu references ==="
-          grep -rn "ubuntu" /usr/lib/live/build 2>/dev/null || true
-          echo "=== lb_binary_hooks ==="
-          cat -n /usr/lib/live/build/lb_binary_hooks 2>/dev/null || true
-          echo "=== lb_chroot_hooks ==="
-          cat -n /usr/lib/live/build/lb_chroot_hooks 2>/dev/null || true
-          echo "=== lb_binary_rootfs compression ==="
-          grep -n "mksquashfs\|gzip\|COMPRESS\|compression\|comp " /usr/lib/live/build/lb_binary_rootfs 2>/dev/null || true
-          echo "=== lb_config compression option ==="
-          grep -n "compression\|--comp" /usr/lib/live/build/lb_config 2>/dev/null || true
-
-      - name: Patch Ubuntu-only live-build syslinux behaviour
+      - name: Install Debian live-build (bookworm)
         run: |
           set -e
-          f=/usr/lib/live/build/lb_binary_syslinux
-          sudo sed -i \
-            -e '/Check_package chroot\/usr\/share\/syslinux\/themes/d' \
-            -e '/gfxboot-theme-ubuntu/d' \
-            -e '/\${_TARGET}\/bootlogo/d' \
-            -e 's|rsvg --format png --height 480 --width 640 splash\.svg splash\.png|rsvg-convert -w 640 -h 480 -o splash.png splash.svg|' \
-            -e 's|rsvg --format png --height 480 --width 640 "\${_TARGET}/splash\.svg" "\${_TARGET}/splash\.png"|rsvg-convert -w 640 -h 480 -o "\${_TARGET}/splash.png" "\${_TARGET}/splash.svg"|' \
-            "$f"
-          sudo bash -n "$f" || echo "!! SYNTAX ERROR after patch"
-          echo "===== relevant lines after patch ====="
-          grep -n "rsvg\|bootlogo\|gfxboot\|syslinux/themes\|isolinux-live" "$f" || true
-
-      - name: Force xz squashfs compression
-        run: |
-          set -e
-          r=/usr/lib/live/build/lb_binary_rootfs
-          # The Ubuntu live-build skips "-comp xz" when LB_MODE=ubuntu, which
-          # makes the squashfs image gzip-compressed and the ISO ~300 MB larger.
-          sudo sed -i '/-no-progress/a MKSQUASHFS_OPTIONS="${MKSQUASHFS_OPTIONS} -comp xz -Xbcj x86 -b 1M"' "$r"
-          sudo bash -n "$r" || echo "!! SYNTAX ERROR in lb_binary_rootfs"
-          grep -n -- "-comp xz" "$r" || true
+          curl -fsSL -o /tmp/live-build.deb \
+            http://deb.debian.org/debian/pool/main/l/live-build/live-build_20230502_all.deb
+          sudo dpkg -i /tmp/live-build.deb || sudo apt-get -f install -y
+          sudo apt-get -f install -y
+          lb --version
 
       - name: Configure live-build
         run: sudo ./auto/config
 
-      - name: Show resolved syslinux config
+      - name: Show resolved bootloader/compression config
         run: |
-          grep -n "SYSLINUX" config/common config/binary 2>/dev/null || true
-
-      - name: Seed local syslinux bootloaders
-        run: |
-          set -e
-          src=/usr/share/live/build/bootloaders/isolinux
-          echo "=== $src ==="
-          ls -la "$src" || true
-          dest=config/bootloaders/isolinux
-          mkdir -p "$dest"
-          # Copy the live-build isolinux templates as *real* files. The
-          # originals are absolute symlinks that dangle inside the Debian
-          # bookworm chroot.
-          for f in "$src"/*; do
-            [ -e "$f" ] || continue
-            cp -Lf "$f" "$dest/$(basename "$f")" 2>/dev/null || true
-          done
-          # Ensure the actual syslinux binaries/modules are present.
-          cp -f /usr/lib/ISOLINUX/isolinux.bin "$dest/" 2>/dev/null || true
-          cp -f /usr/lib/syslinux/modules/bios/*.c32 "$dest/" 2>/dev/null || true
-          echo "=== $dest ==="
-          ls -la "$dest"
+          grep -nE "BOOTLOADER|SQUASHFS|COMPRESSION" config/common config/binary 2>/dev/null || true
 
       - name: Build ISO
         run: sudo ./auto/build

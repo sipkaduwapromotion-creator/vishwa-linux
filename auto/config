@@ -5,10 +5,16 @@
 #
 set -e
 
-# Only pass --bootloaders if this live-build supports it (it does since 3.0).
+# Only pass --bootloaders if this live-build supports it.
 BOOTLOADERS=""
 if lb config --help 2>&1 | grep -q -- "--bootloaders"; then
-	BOOTLOADERS="--bootloaders syslinux,grub-efi"
+	BOOTLOADERS="--bootloaders \"syslinux grub-efi\""
+fi
+
+# Squashfs compression: use xz (smaller ISO).
+COMPRESSION=""
+if lb config --help 2>&1 | grep -q -- "--chroot-squashfs-compression-type"; then
+	COMPRESSION="--chroot-squashfs-compression-type xz"
 fi
 
 # shellcheck disable=SC2086
@@ -25,6 +31,7 @@ lb config noauto \
 	--mirror-binary-security "http://security.debian.org/debian-security" \
 	--binary-images "iso-hybrid" \
 	$BOOTLOADERS \
+	$COMPRESSION \
 	--bootappend-live "boot=live components quiet splash username=vishwa hostname=vishwa keyboard-layouts=us timezone=Asia/Colombo" \
 	--linux-flavours "amd64" \
 	--linux-packages "linux-image" \
@@ -42,10 +49,9 @@ lb config noauto \
 	--zsync false \
 	"${@}"
 
-# The live-build shipped on the CI runner is Ubuntu's ancient 3.0~a57, which
-# defaults the syslinux theme to Ubuntu-only packages (syslinux-themes-ubuntu-oneiric,
-# gfxboot-theme-ubuntu) that do not exist in Debian bookworm. Force live-build's
-# own (Debian) bootloader templates instead.
+# LB_SYSLINUX_THEME is only meaningful to the ancient Ubuntu live-build; the
+# Debian live-build 20230502 we install on the runner ignores it. Kept as a
+# harmless safety value.
 for _cfg in config/common config/binary; do
 	if [ -f "${_cfg}" ]; then
 		printf '\nLB_SYSLINUX_THEME="live-build"\n' >> "${_cfg}"
