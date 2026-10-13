@@ -5,18 +5,6 @@
 #
 set -e
 
-# Only pass --bootloaders if this live-build supports it.
-BOOTLOADERS=""
-if lb config --help 2>&1 | grep -q -- "--bootloaders"; then
-	BOOTLOADERS="--bootloaders \"syslinux grub-efi\""
-fi
-
-# Squashfs compression: use xz (smaller ISO).
-COMPRESSION=""
-if lb config --help 2>&1 | grep -q -- "--chroot-squashfs-compression-type"; then
-	COMPRESSION="--chroot-squashfs-compression-type xz"
-fi
-
 # shellcheck disable=SC2086
 lb config noauto \
 	--architectures "amd64" \
@@ -30,8 +18,8 @@ lb config noauto \
 	--mirror-binary "http://deb.debian.org/debian" \
 	--mirror-binary-security "http://security.debian.org/debian-security" \
 	--binary-images "iso-hybrid" \
-	$BOOTLOADERS \
-	$COMPRESSION \
+	--bootloaders "syslinux grub-efi" \
+	--chroot-squashfs-compression-type xz \
 	--bootappend-live "boot=live components quiet splash username=vishwa hostname=vishwa keyboard-layouts=us timezone=Asia/Colombo" \
 	--linux-flavours "amd64" \
 	--linux-packages "linux-image" \
