@@ -23,9 +23,11 @@ if [ -d isolinux ]; then
 	if [ -f vishwa-boot/stdmenu.cfg ]; then
 		cp -f vishwa-boot/stdmenu.cfg isolinux/stdmenu.cfg
 	fi
-	if [ -f isolinux/menu.cfg ]; then
-		sed -i 's/^menu title .*/menu title Vishwa Linux 1.0 (Cosmos)/' isolinux/menu.cfg || true
-	fi
+	for cfg in isolinux/isolinux.cfg isolinux/menu.cfg; do
+		if [ -f "$cfg" ]; then
+			sed -i 's/^menu title .*/menu title Vishwa Linux 1.0 (Cosmos)/' "$cfg" || true
+		fi
+	done
 	echo "Vishwa: syslinux themed."
 else
 	echo "Vishwa: no isolinux dir found."
@@ -48,6 +50,14 @@ if [ -n "$GRUB_DIR" ]; then
 		mkdir -p "$GRUB_DIR/live-theme"
 		cp -f vishwa-boot/grub-theme.txt "$GRUB_DIR/live-theme/theme.txt"
 	fi
+	# Point GRUB at the theme in every generated config (BIOS + UEFI share
+	# boot/grub/grub.cfg on the live ISO).
+	find "$GRUB_DIR" -maxdepth 2 -name 'grub.cfg' 2>/dev/null | while read -r _cfg; do
+		if ! grep -q 'live-theme/theme.txt' "$_cfg" 2>/dev/null; then
+			printf '\nset theme=/boot/grub/live-theme/theme.txt\n' >> "$_cfg"
+		fi
+	done
+	grep -rl 'live-theme/theme.txt' "$GRUB_DIR" 2>/dev/null | sed 's/^/  Vishwa: grub theme set in /' || true
 	echo "Vishwa: grub themed ($GRUB_DIR)."
 else
 	echo "Vishwa: no grub dir found."
