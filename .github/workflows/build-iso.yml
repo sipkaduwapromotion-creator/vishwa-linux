@@ -56,6 +56,18 @@ jobs:
           sudo apt-get -f install -y
           lb --version
 
+      - name: Tune squashfs compression (BCJ x86 + 1M blocks)
+        run: |
+          set -e
+          f=/usr/lib/live/build/binary_rootfs
+          sudo sed -i \
+            's|mksquashfs chroot filesystem.squashfs ${MKSQUASHFS_OPTIONS}|mksquashfs chroot filesystem.squashfs -Xbcj x86 -b 1M ${MKSQUASHFS_OPTIONS}|' \
+            's|mksquashfs chroot binary/${INITFS}/filesystem.squashfs ${MKSQUASHFS_OPTIONS}|mksquashfs chroot binary/${INITFS}/filesystem.squashfs -Xbcj x86 -b 1M ${MKSQUASHFS_OPTIONS}|' \
+            "$f"
+          sudo bash -n "$f"
+          echo "===== mksquashfs lines after patch ====="
+          grep -n "mksquashfs" "$f"
+
       - name: Configure live-build
         run: sudo ./auto/config
 

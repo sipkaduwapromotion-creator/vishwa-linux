@@ -34,7 +34,6 @@ pciutils
 # ---- fonts -----------------------------------------------------------------
 fonts-dejavu-core
 fonts-liberation2
-fonts-noto-core
 
 # ---- small utilities -------------------------------------------------------
 nano

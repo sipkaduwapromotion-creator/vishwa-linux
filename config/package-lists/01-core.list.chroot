@@ -22,3 +22,4 @@ parted
 apt-utils
 ca-certificates
 syslinux-utils
+squashfs-tools
